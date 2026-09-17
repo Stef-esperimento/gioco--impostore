@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Il Fascicolo — Gioco dell'Impostore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121214;
+    --surface:#1C1C1F;
+    --surface-raised:#232327;
+    --ink:#E8E5DC;
+    --ink-dim:#9C9A93;
+    --gold:#C9A24B;
+    --red:#B23A2E;
+    --hairline:#38383C;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .stage{
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+  .file{
+    width:100%;
+    max-width:420px;
+    background:var(--surface);
+    border:1px solid var(--hairline);
+    border-left:4px solid var(--gold);
+    padding:28px 24px 24px;
+    position:relative;
+  }
+  .file.impostor-mode{ border-left-color:var(--red); }
+  .case-no{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--ink-dim);
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  h1.title{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:26px;
+    line-height:1.2;
+    margin:0 0 6px;
+  }
+  p.sub{
+    color:var(--ink-dim);
+    font-size:14px;
+    margin:0 0 24px;
+    line-height:1.5;
+  }
+  .field{ margin-bottom:18px; }
+  .field label{
+    display:block;
+    font-size:12px;
+    color:var(--ink-dim);
+    margin-bottom:8px;
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:0.03em;
+  }
+  .field input[type=text], .field select{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--hairline);
+    color:var(--ink);
+    padding:11px 12px;
+    font-size:15px;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .field input[type=text]:focus, .field select:focus{
+    outline:none;
+    border-color:var(--gold);
+  }
+  .stepper{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .stepper button{
+    width:36px;height:36px;
+    background:var(--bg);
+    border:1px solid var(--hairline);
+    color:var(--ink);
+    font-size:18px;
+    cursor:pointer;
+  }
+  .stepper button:active{ border-color:var(--gold); }
+  .stepper .count{
+    font-family:'Fraunces',serif;
+    font-size:22px;
+    min-width:24px;
+    text-align:center;
+  }
+  .names-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+  .names-list input{
+    background:var(--bg);
+    border:1px solid var(--hairline);
+    color:var(--ink);
+    padding:9px 11px;
+    font-size:14px;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .names-list input:focus{ outline:none; border-color:var(--gold); }
+  .btn{
+    display:block;
+    width:100%;
+    background:var(--gold);
+    color:#1a1608;
+    border:none;
+    padding:14px;
+    font-size:15px;
+    font-weight:600;
+    font-family:'IBM Plex Sans',sans-serif;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .btn:active{ opacity:0.85; }
+  .btn.secondary{
+    background:transparent;
+    border:1px solid var(--hairline);
+    color:var(--ink);
+  }
+  .btn.danger{ background:var(--red); color:#fff; }
+
+  /* pass screen */
+  .pass-icon{
+    font-size:38px;
+    text-align:center;
+    margin-bottom:18px;
+    opacity:0.9;
+  }
+  .pass-name{
+    font-family:'Fraunces',serif;
+    font-size:30px;
+    text-align:center;
+    margin:4px 0 6px;
+  }
+  .pass-note{
+    text-align:center;
+    color:var(--ink-dim);
+    font-size:13px;
+    margin-bottom:26px;
+    line-height:1.5;
+  }
+
+  /* redacted reveal */
+  .dossier-line{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-dim);
+    margin-bottom:6px;
+    letter-spacing:0.04em;
+  }
+  .reveal-box{
+    background:var(--surface-raised);
+    border:1px solid var(--hairline);
+    padding:26px 18px;
+    margin:18px 0 22px;
+    text-align:center;
+    position:relative;
+    min-height:88px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    user-select:none;
+  }
+  .reveal-word{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:28px;
+  }
+  .reveal-word.is-impostor{ color:var(--red); }
+  .reveal-word.is-crew{ color:var(--gold); }
+  .redaction{
+    position:absolute;
+    inset:0;
+    background:#0A0A0B;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform 0.45s cubic-bezier(.7,0,.2,1), opacity 0.4s;
+  }
+  .redaction span{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.12em;
+    color:#5a5a5e;
+  }
+  .redaction.opened{
+    transform:translateX(102%);
+    opacity:0;
+    pointer-events:none;
+  }
+  .stamp{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.1em;
+    border:2px solid var(--red);
+    color:var(--red);
+    padding:4px 10px;
+    transform:rotate(-3deg);
+    margin-top:10px;
+  }
+  .hint-toggle{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-dim);
+    margin-bottom:20px;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  /* timer */
+  .timer{
+    font-family:'Fraunces',serif;
+    font-size:56px;
+    text-align:center;
+    margin:16px 0 6px;
+    font-variant-numeric:tabular-nums;
+  }
+  .timer-controls{
+    display:flex;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .timer-controls .btn{ margin-top:0; }
+
+  /* results */
+  .result-row{
+    display:flex;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid var(--hairline);
+    font-size:14px;
+  }
+  .result-row .label{ color:var(--ink-dim); }
+  .result-row .value{ font-family:'Fraunces',serif; font-size:16px; }
+
+  .hidden{ display:none !important; }
+  .foot-note{
+    text-align:center;
+    color:var(--ink-dim);
+    font-size:11px;
+    margin-top:16px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <!-- SETUP SCREEN -->
+  <div class="file" id="screen-setup">
+    <div class="case-no"><span>FASCICOLO N. 07</span><span>RISERVATO</span></div>
+    <h1 class="title">Il Fascicolo</h1>
+    <p class="sub">Un giocatore in ogni turno riceverà una parola segreta. Uno solo di voi non la riceverà: è l'impostore. Scopritelo prima che scopra voi.</p>
+
+    <div class="field">
+      <label>Numero di giocatori</label>
+      <div class="stepper">
+        <button type="button" onclick="changePlayers(-1)">−</button>
+        <div class="count" id="playerCount">4</div>
+        <button type="button" onclick="changePlayers(1)">+</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Categoria</label>
+      <select id="categorySelect"></select>
+    </div>
+
+    <div class="field">
+      <label>Numero di impostori</label>
+      <div class="stepper">
+        <button type="button" onclick="changeImpostors(-1)">−</button>
+        <div class="count" id="impostorCount">1</div>
+        <button type="button" onclick="changeImpostors(1)">+</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Nomi dei giocatori (opzionale)</label>
+      <div class="names-list" id="namesList"></div>
+    </div>
+
+    <button class="btn" onclick="startGame()">Apri il fascicolo</button>
+  </div>
+
+  <!-- PASS SCREEN -->
+  <div class="file hidden" id="screen-pass">
+    <div class="case-no"><span id="passCaseNo">FASCICOLO N. 07</span><span id="passProgress">1 / 4</span></div>
+    <div class="pass-icon">🕵️</div>
+    <div class="pass-name" id="passName">Giocatore 1</div>
+    <p class="pass-note">Passa il dispositivo solo a questa persona.<br>Nessun altro deve guardare lo schermo ora.</p>
+    <button class="btn" onclick="showReveal()">Sono io — continua</button>
+  </div>
+
+  <!-- REVEAL SCREEN -->
+  <div class="file hidden" id="screen-reveal">
+    <div class="dossier-line" id="revealCaseNo">FASCICOLO N. 07 — PAGINA RISERVATA</div>
+    <h1 class="title" id="revealName">Giocatore 1</h1>
+    <p class="sub">Tocca il riquadro per scoprire il contenuto. Richiudi lo schermo subito dopo aver letto.</p>
+
+    <div class="reveal-box" id="revealBox" onclick="openRedaction()">
+      <div class="redaction" id="redaction"><span>TOCCA PER APRIRE</span></div>
+      <div id="revealContent"></div>
+    </div>
+
+    <div class="hint-toggle hidden" id="hintToggle" onclick="toggleHint()">mostra un indizio di categoria</div>
+
+    <button class="btn hidden" id="nextPlayerBtn" onclick="nextPlayer()">Ho visto — passa il fascicolo</button>
+  </div>
+
+  <!-- DISCUSSION SCREEN -->
+  <div class="file hidden" id="screen-discussion">
+    <div class="case-no"><span>FASE 2</span><span>DISCUSSIONE</span></div>
+    <h1 class="title">Discutete</h1>
+    <p class="sub">A turno, ogni giocatore dice una parola (o una breve descrizione) legata al termine segreto. Chi non lo conosce dovrà improvvisare senza farsi scoprire.</p>
+
+    <div class="timer" id="timerDisplay">3:00</div>
+    <div class="timer-controls">
+      <button class="btn secondary" style="flex:1" id="timerToggleBtn" onclick="toggleTimer()">Avvia</button>
+      <button class="btn secondary" style="flex:1" onclick="resetTimer()">Azzera</button>
+    </div>
+
+    <button class="btn" onclick="goToVote()">Si vota</button>
+  </div>
+
+  <!-- VOTE / RESULT SCREEN -->
+  <div class="file hidden" id="screen-vote">
+    <div class="case-no"><span>FASE 3</span><span>VERDETTO</span></div>
+    <h1 class="title">Chi era l'impostore?</h1>
+    <p class="sub">Decidete a voce chi accusare, poi rivelate la verità.</p>
+    <button class="btn danger" onclick="revealTruth()">Rivela la verità</button>
+  </div>
+
+  <div class="file hidden" id="screen-result">
+    <div class="case-no"><span>CASO CHIUSO</span><span id="resultCaseNo">FASCICOLO N. 07</span></div>
+    <h1 class="title">Il fascicolo è chiuso</h1>
+    <div class="result-row"><span class="label">Parola segreta</span><span class="value" id="resultWord">—</span></div>
+    <div class="result-row"><span class="label">Categoria</span><span class="value" id="resultCategory">—</span></div>
+    <div class="result-row"><span class="label" id="resultImpLabel">Impostore</span><span class="value" id="resultImpostors">—</span></div>
+    <button class="btn" style="margin-top:24px" onclick="newGameSameSetup()">Nuova partita, stessi giocatori</button>
+    <button class="btn secondary" onclick="backToSetup()">Cambia impostazioni</button>
+  </div>
+
+</div>
+
+<script>
+const CATEGORIES = {
+  "Cibo": ["Pizza","Sushi","Gelato","Pasta","Hamburger","Tiramisù","Paella","Kebab","Risotto","Croissant","Taco","Lasagna","Popcorn","Ramen","Focaccia"],
+  "Animali": ["Leone","Delfino","Pinguino","Elefante","Canguro","Gufo","Squalo","Panda","Cammello","Aquila","Polpo","Volpe","Riccio","Farfalla","Orso"],
+  "Film e Serie TV": ["Titanic","Matrix","Friends","Avatar","Inception","Frozen","Joker","Squid Game","Il Padrino","Toy Story","Breaking Bad","Shrek","Gladiatore","Stranger Things","Rocky"],
+  "Sport": ["Calcio","Tennis","Nuoto","Basket","Sci","Golf","Boxe","Ciclismo","Pallavolo","Scherma","Rugby","Atletica","Judo","Vela","Pattinaggio"],
+  "Città": ["Parigi","Tokyo","New York","Roma","Il Cairo","Sydney","Barcellona","Dubai","Londra","Rio de Janeiro","Amsterdam","Venezia","Berlino","Istanbul","Marrakech"],
+  "Oggetti quotidiani": ["Ombrello","Chiavi","Occhiali","Zaino","Specchio","Forbici","Candela","Termos","Cuscino","Sveglia","Portafoglio","Lampadina","Valigia","Bicicletta","Orologio"]
+};
+
+let state = {
+  players: 4,
+  impostors: 1,
+  category: "Cibo",
+  names: [],
+  order: [],
+  impostorIndexes: [],
+  word: "",
+  currentIndex: 0,
+  timerSeconds: 180,
+  timerRunning: false,
+  timerInterval: null,
+  caseNo: 7
+};
+
+function $(id){ return document.getElementById(id); }
+function show(id){
+  ["screen-setup","screen-pass","screen-reveal","screen-discussion","screen-vote","screen-result"].forEach(s=>{
+    $(s).classList.add("hidden");
+  });
+  $(id).classList.remove("hidden");
+}
+
+function initCategorySelect(){
+  const sel = $("categorySelect");
+  sel.innerHTML = "";
+  Object.keys(CATEGORIES).forEach(cat=>{
+    const opt = document.createElement("option");
+    opt.value = cat; opt.textContent = cat;
+    sel.appendChild(opt);
+  });
+  sel.value = state.category;
+  sel.onchange = ()=>{ state.category = sel.value; };
+}
+
+function renderNamesList(){
+  const list = $("namesList");
+  list.innerHTML = "";
+  for(let i=0;i<state.players;i++){
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.placeholder = "Giocatore " + (i+1);
+    inp.value = state.names[i] || "";
+    inp.dataset.index = i;
+    list.appendChild(inp);
+  }
+}
+
+function changePlayers(delta){
+  const next = state.players + delta;
+  if(next < 3 || next > 12) return;
+  state.players = next;
+  if(state.impostors >= state.players) state.impostors = state.players - 2;
+  $("playerCount").textContent = state.players;
+  $("impostorCount").textContent = state.impostors;
+  renderNamesList();
+}
+
+function changeImpostors(delta){
+  const next = state.impostors + delta;
+  if(next < 1 || next > Math.floor(state.players/2)) return;
+  state.impostors = next;
+  $("impostorCount").textContent = state.impostors;
+}
+
+function collectNames(){
+  const inputs = document.querySelectorAll("#namesList input");
+  state.names = Array.from(inputs).map((inp,i)=> inp.value.trim() || ("Giocatore " + (i+1)));
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function startGame(){
+  collectNames();
+  const words = CATEGORIES[state.category];
+  state.word = words[Math.floor(Math.random()*words.length)];
+  const indexes = shuffle([...Array(state.players).keys()]);
+  state.impostorIndexes = indexes.slice(0, state.impostors);
+  state.currentIndex = 0;
+  state.caseNo = Math.floor(Math.random()*90)+10;
+  showPassScreen();
+}
+
+function showPassScreen(){
+  const name = state.names[state.currentIndex];
+  $("passCaseNo").textContent = "FASCICOLO N. " + state.caseNo;
+  $("passProgress").textContent = (state.currentIndex+1) + " / " + state.players;
+  $("passName").textContent = name;
+  show("screen-pass");
+}
+
+function showReveal(){
+  const name = state.names[state.currentIndex];
+  const isImpostor = state.impostorIndexes.includes(state.currentIndex);
+  $("revealCaseNo").textContent = "FASCICOLO N. " + state.caseNo + " — PAGINA " + (state.currentIndex+1);
+  $("revealName").textContent = name;
+
+  const content = $("revealContent");
+  content.innerHTML = "";
+  const wordEl = document.createElement("div");
+  if(isImpostor){
+    wordEl.innerHTML = '<div class="reveal-word is-impostor">SEI L\u2019IMPOSTORE</div><div class="stamp">NON CONOSCI LA PAROLA</div>';
+  } else {
+    wordEl.innerHTML = '<div class="reveal-word is-crew">' + state.word + '</div>';
+  }
+  content.appendChild(wordEl);
+
+  const redaction = $("redaction");
+  redaction.classList.remove("opened");
+  redaction.innerHTML = "<span>TOCCA PER APRIRE</span>";
+
+  const hint = $("hintToggle");
+  if(isImpostor){
+    hint.classList.remove("hidden");
+    hint.textContent = "mostra un indizio di categoria";
+    hint.dataset.shown = "0";
+  } else {
+    hint.classList.add("hidden");
+  }
+
+  $("nextPlayerBtn").classList.add("hidden");
+  show("screen-reveal");
+}
+
+function openRedaction(){
+  const redaction = $("redaction");
+  if(redaction.classList.contains("opened")) return;
+  redaction.classList.add("opened");
+  $("nextPlayerBtn").classList.remove("hidden");
+}
+
+function toggleHint(){
+  const hint = $("hintToggle");
+  if(hint.dataset.shown === "1"){
+    hint.textContent = "mostra un indizio di categoria";
+    hint.dataset.shown = "0";
+  } else {
+    hint.textContent = "categoria: " + state.category;
+    hint.dataset.shown = "1";
+  }
+}
+
+function nextPlayer(){
+  state.currentIndex++;
+  if(state.currentIndex >= state.players){
+    startDiscussion();
+  } else {
+    showPassScreen();
+  }
+}
+
+function startDiscussion(){
+  state.timerSeconds = 180;
+  state.timerRunning = false;
+  updateTimerDisplay();
+  $("timerToggleBtn").textContent = "Avvia";
+  show("screen-discussion");
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(state.timerSeconds/60);
+  const s = state.timerSeconds % 60;
+  $("timerDisplay").textContent = m + ":" + String(s).padStart(2,"0");
+}
+
+function toggleTimer(){
+  state.timerRunning = !state.timerRunning;
+  $("timerToggleBtn").textContent = state.timerRunning ? "Pausa" : "Riprendi";
+  if(state.timerRunning){
+    state.timerInterval = setInterval(()=>{
+      if(state.timerSeconds > 0){
+        state.timerSeconds--;
+        updateTimerDisplay();
+      } else {
+        clearInterval(state.timerInterval);
+        state.timerRunning = false;
+        $("timerToggleBtn").textContent = "Avvia";
+      }
+    }, 1000);
+  } else {
+    clearInterval(state.timerInterval);
+  }
+}
+
+function resetTimer(){
+  clearInterval(state.timerInterval);
+  state.timerRunning = false;
+  state.timerSeconds = 180;
+  $("timerToggleBtn").textContent = "Avvia";
+  updateTimerDisplay();
+}
+
+function goToVote(){
+  clearInterval(state.timerInterval);
+  show("screen-vote");
+}
+
+function revealTruth(){
+  $("resultCaseNo").textContent = "FASCICOLO N. " + state.caseNo;
+  $("resultWord").textContent = state.word;
+  $("resultCategory").textContent = state.category;
+  $("resultImpLabel").textContent = state.impostorIndexes.length > 1 ? "Impostori" : "Impostore";
+  $("resultImpostors").textContent = state.impostorIndexes.map(i=>state.names[i]).join(", ");
+  show("screen-result");
+}
+
+function newGameSameSetup(){
+  startGame();
+}
+
+function backToSetup(){
+  $("playerCount").textContent = state.players;
+  $("impostorCount").textContent = state.impostors;
+  renderNamesList();
+  show("screen-setup");
+}
+
+initCategorySelect();
+renderNamesList();
+</script>
+
+</body>
+</html>

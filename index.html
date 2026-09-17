@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -486,7 +487,7 @@ function showReveal(){
   content.innerHTML = "";
   const wordEl = document.createElement("div");
   if(isImpostor){
-    wordEl.innerHTML = '<div class="reveal-word is-impostor">SEI L\\'IMPOSTORE</div><div class="stamp">NON CONOSCI LA PAROLA</div>';
+    wordEl.innerHTML = '<div class="reveal-word is-impostor">SEI L\u2019IMPOSTORE</div><div class="stamp">NON CONOSCI LA PAROLA</div>';
   } else {
     wordEl.innerHTML = '<div class="reveal-word is-crew">' + state.word + '</div>';
   }
@@ -607,4 +608,4 @@ renderNamesList();
 </script>
 
 </body>
-</html>
+</html

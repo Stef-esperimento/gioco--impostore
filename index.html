@@ -78,7 +78,7 @@ html
     font-family:'IBM Plex Mono',monospace;
     letter-spacing:0.03em;
   }
-  .field input[type=text], .field select{
+  .field input[type=text], .field input[type=password], .field select{
     width:100%;
     background:var(--bg);
     border:1px solid var(--hairline);
@@ -87,7 +87,7 @@ html
     font-size:15px;
     font-family:'IBM Plex Sans',sans-serif;
   }
-  .field input[type=text]:focus, .field select:focus{
+  .field input[type=text]:focus, .field input[type=password]:focus, .field select:focus{
     outline:none;
     border-color:var(--gold);
   }
@@ -272,8 +272,37 @@ html
 
 <div class="stage">
 
+  <!-- LOGIN SCREEN -->
+  <div class="file" id="screen-login">
+    <div class="case-no"><span>ACCESSO</span><span>LIVELLO 1</span></div>
+    <h1 class="title">Accesso riservato</h1>
+    <p class="sub">Questo fascicolo è confidenziale. Inserisci la parola d'ordine per procedere.</p>
+    <div class="field">
+      <label>Parola d'ordine</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" onkeypress="if(event.key==='Enter') checkPassword()">
+    </div>
+    <div id="loginError" style="color:var(--red);font-size:13px;margin-bottom:14px;display:none;">Parola d'ordine errata. Riprova.</div>
+    <button class="btn" onclick="checkPassword()">Accedi</button>
+    <div class="foot-note">A cura di Stefania Pairona</div>
+  </div>
+
+  <!-- HOW TO PLAY SCREEN -->
+  <div class="file hidden" id="screen-howto">
+    <div class="case-no"><span>ISTRUZIONI</span><span>PRIMA DI INIZIARE</span></div>
+    <h1 class="title">Come si gioca</h1>
+    <p class="sub">Passatevi il dispositivo a turno. Ogni giocatore vedrà una parola segreta, tranne l'impostore.</p>
+    <div style="font-size:14px;line-height:1.8;color:var(--ink);margin-bottom:24px;">
+      1. Ogni giocatore, a turno, guarda lo schermo da solo e scopre il proprio ruolo.<br>
+      2. Chi non è l'impostore vede la parola segreta. L'impostore no.<br>
+      3. A voce alta, ognuno dice una parola legata al termine segreto, senza svelarlo apertamente.<br>
+      4. Dopo un giro di discussione, si vota chi si crede sia l'impostore.<br>
+      5. Si rivela la verità: se lo avete scoperto, vince il gruppo. Altrimenti, vince lui.
+    </div>
+    <button class="btn" onclick="show('screen-setup')">Ho capito — inizia</button>
+  </div>
+
   <!-- SETUP SCREEN -->
-  <div class="file" id="screen-setup">
+  <div class="file hidden" id="screen-setup">
     <div class="case-no"><span>FASCICOLO N. 07</span><span>RISERVATO</span></div>
     <h1 class="title">Il Fascicolo</h1>
     <p class="sub">Un giocatore in ogni turno riceverà una parola segreta. Uno solo di voi non la riceverà: è l'impostore. Scopritelo prima che scopra voi.</p>
@@ -307,6 +336,7 @@ html
     </div>
 
     <button class="btn" onclick="startGame()">Apri il fascicolo</button>
+    <div class="foot-note">A cura di Stefania Pairona</div>
   </div>
 
   <!-- PASS SCREEN -->
@@ -394,9 +424,23 @@ let state = {
   caseNo: 7
 };
 
+const PASSWORD = "Impostore2026!";
+
+function checkPassword(){
+  const val = document.getElementById("loginPassword").value;
+  const err = document.getElementById("loginError");
+  if(val === PASSWORD){
+    err.style.display = "none";
+    document.getElementById("loginPassword").value = "";
+    show("screen-howto");
+  } else {
+    err.style.display = "block";
+  }
+}
+
 function $(id){ return document.getElementById(id); }
 function show(id){
-  ["screen-setup","screen-pass","screen-reveal","screen-discussion","screen-vote","screen-result"].forEach(s=>{
+  ["screen-login","screen-howto","screen-setup","screen-pass","screen-reveal","screen-discussion","screen-vote","screen-result"].forEach(s=>{
     $(s).classList.add("hidden");
   });
   $(id).classList.remove("hidden");
@@ -605,6 +649,7 @@ function backToSetup(){
 
 initCategorySelect();
 renderNamesList();
+show("screen-login");
 </script>
 
 </body>

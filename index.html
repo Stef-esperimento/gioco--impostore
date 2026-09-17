@@ -1,31 +1,38 @@
-html
 <!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Il Fascicolo — Gioco dell'Impostore</title>
+<title>Field Test — Trova l'Impostore</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#121214;
-    --surface:#1C1C1F;
-    --surface-raised:#232327;
-    --ink:#E8E5DC;
-    --ink-dim:#9C9A93;
-    --gold:#C9A24B;
-    --red:#B23A2E;
-    --hairline:#38383C;
+    --bg:#0A0A0A;
+    --surface:#161616;
+    --surface-2:#202020;
+    --ink:#F2F1EC;
+    --ink-dim:#9A9990;
+    --accent:#FF5A2E;
+    --accent-dark:#FF8A5C;
+    --hairline:#2E2E2E;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
   body{
     margin:0;
-    background:var(--bg);
+    background-color:var(--bg);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0px, rgba(255,255,255,0.045) 1px, transparent 1px, transparent 42px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0px, rgba(255,255,255,0.045) 1px, transparent 1px, transparent 42px),
+      radial-gradient(circle at 6% 10%, rgba(255,90,46,0.30), transparent 34%),
+      radial-gradient(circle at 96% 6%, rgba(232,26,132,0.22), transparent 38%),
+      radial-gradient(circle at 92% 96%, rgba(0,140,255,0.20), transparent 42%),
+      radial-gradient(circle at 4% 96%, rgba(255,196,0,0.18), transparent 38%);
+    background-attachment:fixed;
     color:var(--ink);
-    font-family:'IBM Plex Sans',sans-serif;
+    font-family:'Barlow',sans-serif;
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
   }
@@ -37,37 +44,46 @@ html
     justify-content:center;
     padding:24px;
   }
-  .file{
+  .card{
     width:100%;
-    max-width:420px;
+    max-width:430px;
     background:var(--surface);
     border:1px solid var(--hairline);
-    border-left:4px solid var(--gold);
-    padding:28px 24px 24px;
+    clip-path:polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%);
+    padding:0 26px 26px;
     position:relative;
+    box-shadow:0 1px 0 var(--hairline);
   }
-  .file.impostor-mode{ border-left-color:var(--red); }
-  .case-no{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:11px;
-    letter-spacing:0.08em;
+  .accent-bar{
+    height:6px;
+    margin:0 -26px 24px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-dark));
+  }
+  .overline{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
     color:var(--ink-dim);
     display:flex;
     justify-content:space-between;
-    margin-bottom:18px;
+    margin-bottom:16px;
   }
+  .overline .hi{ color:var(--accent-dark); }
   h1.title{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:26px;
-    line-height:1.2;
-    margin:0 0 6px;
+    font-family:'Bebas Neue',sans-serif;
+    font-weight:400;
+    font-size:40px;
+    letter-spacing:0.01em;
+    line-height:1;
+    margin:0 0 10px;
   }
   p.sub{
     color:var(--ink-dim);
-    font-size:14px;
+    font-size:14.5px;
     margin:0 0 24px;
-    line-height:1.5;
+    line-height:1.55;
   }
   .field{ margin-bottom:18px; }
   .field label{
@@ -75,21 +91,24 @@ html
     font-size:12px;
     color:var(--ink-dim);
     margin-bottom:8px;
-    font-family:'IBM Plex Mono',monospace;
-    letter-spacing:0.03em;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
   }
   .field input[type=text], .field input[type=password], .field select{
     width:100%;
-    background:var(--bg);
+    background:var(--surface-2);
     border:1px solid var(--hairline);
     color:var(--ink);
     padding:11px 12px;
     font-size:15px;
-    font-family:'IBM Plex Sans',sans-serif;
+    font-family:'Barlow',sans-serif;
+    font-weight:500;
   }
   .field input[type=text]:focus, .field input[type=password]:focus, .field select:focus{
     outline:none;
-    border-color:var(--gold);
+    border-color:var(--accent);
   }
   .stepper{
     display:flex;
@@ -97,63 +116,64 @@ html
     gap:16px;
   }
   .stepper button{
-    width:36px;height:36px;
-    background:var(--bg);
+    width:38px;height:38px;
+    background:var(--surface-2);
     border:1px solid var(--hairline);
     color:var(--ink);
     font-size:18px;
     cursor:pointer;
   }
-  .stepper button:active{ border-color:var(--gold); }
+  .stepper button:active{ background:var(--accent); }
   .stepper .count{
-    font-family:'Fraunces',serif;
-    font-size:22px;
-    min-width:24px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:26px;
+    min-width:26px;
     text-align:center;
   }
   .names-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
   .names-list input{
-    background:var(--bg);
+    background:var(--surface-2);
     border:1px solid var(--hairline);
     color:var(--ink);
     padding:9px 11px;
     font-size:14px;
-    font-family:'IBM Plex Sans',sans-serif;
+    font-family:'Barlow',sans-serif;
   }
-  .names-list input:focus{ outline:none; border-color:var(--gold); }
+  .names-list input:focus{ outline:none; border-color:var(--accent); }
   .btn{
     display:block;
     width:100%;
-    background:var(--gold);
-    color:#1a1608;
+    background:var(--surface-2);
+    color:var(--ink);
     border:none;
-    padding:14px;
-    font-size:15px;
-    font-weight:600;
-    font-family:'IBM Plex Sans',sans-serif;
+    padding:15px;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    font-family:'Barlow',sans-serif;
     cursor:pointer;
     margin-top:6px;
   }
-  .btn:active{ opacity:0.85; }
+  .btn:active{ background:var(--accent-dark); color:#0A0A0A; }
+  .btn.primary{ background:var(--accent); color:#0A0A0A; }
+  .btn.primary:active{ background:var(--accent-dark); }
   .btn.secondary{
     background:transparent;
     border:1px solid var(--hairline);
     color:var(--ink);
   }
-  .btn.danger{ background:var(--red); color:#fff; }
 
-  /* pass screen */
   .pass-icon{
-    font-size:38px;
+    font-size:36px;
     text-align:center;
-    margin-bottom:18px;
-    opacity:0.9;
+    margin-bottom:16px;
   }
   .pass-name{
-    font-family:'Fraunces',serif;
-    font-size:30px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:34px;
     text-align:center;
-    margin:4px 0 6px;
+    margin:2px 0 8px;
   }
   .pass-note{
     text-align:center;
@@ -163,22 +183,23 @@ html
     line-height:1.5;
   }
 
-  /* redacted reveal */
-  .dossier-line{
-    font-family:'IBM Plex Mono',monospace;
+  .spec-line{
+    font-family:'Barlow Condensed',sans-serif;
     font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
     color:var(--ink-dim);
-    margin-bottom:6px;
-    letter-spacing:0.04em;
+    margin-bottom:8px;
   }
   .reveal-box{
-    background:var(--surface-raised);
+    background:var(--surface-2);
     border:1px solid var(--hairline);
-    padding:26px 18px;
-    margin:18px 0 22px;
+    padding:30px 18px;
+    margin:16px 0 20px;
     text-align:center;
     position:relative;
-    min-height:88px;
+    min-height:96px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -186,41 +207,44 @@ html
     user-select:none;
   }
   .reveal-word{
-    font-family:'Fraunces',serif;
-    font-weight:600;
-    font-size:28px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:32px;
+    letter-spacing:0.01em;
   }
-  .reveal-word.is-impostor{ color:var(--red); }
-  .reveal-word.is-crew{ color:var(--gold); }
-  .redaction{
+  .reveal-word.is-impostor{ color:var(--accent); }
+  .reveal-word.is-crew{ color:var(--ink); }
+  .cover{
     position:absolute;
     inset:0;
-    background:#0A0A0B;
+    background:#000000;
     display:flex;
     align-items:center;
     justify-content:center;
-    transition:transform 0.45s cubic-bezier(.7,0,.2,1), opacity 0.4s;
+    transition:transform 0.4s cubic-bezier(.7,0,.2,1), opacity 0.35s;
   }
-  .redaction span{
-    font-family:'IBM Plex Mono',monospace;
+  .cover span{
+    font-family:'Barlow Condensed',sans-serif;
     font-size:12px;
-    letter-spacing:0.12em;
-    color:#5a5a5e;
+    font-weight:600;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink);
   }
-  .redaction.opened{
-    transform:translateX(102%);
+  .cover.opened{
+    transform:translateY(-102%);
     opacity:0;
     pointer-events:none;
   }
-  .stamp{
+  .tag{
     display:inline-block;
-    font-family:'IBM Plex Mono',monospace;
+    font-family:'Barlow Condensed',sans-serif;
     font-size:12px;
-    letter-spacing:0.1em;
-    border:2px solid var(--red);
-    color:var(--red);
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    border:1.5px solid var(--accent);
+    color:var(--accent);
     padding:4px 10px;
-    transform:rotate(-3deg);
     margin-top:10px;
   }
   .hint-toggle{
@@ -232,12 +256,11 @@ html
     cursor:pointer;
   }
 
-  /* timer */
   .timer{
-    font-family:'Fraunces',serif;
-    font-size:56px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:58px;
     text-align:center;
-    margin:16px 0 6px;
+    margin:14px 0 6px;
     font-variant-numeric:tabular-nums;
   }
   .timer-controls{
@@ -247,24 +270,52 @@ html
   }
   .timer-controls .btn{ margin-top:0; }
 
-  /* results */
   .result-row{
     display:flex;
     justify-content:space-between;
-    padding:10px 0;
+    padding:11px 0;
     border-bottom:1px solid var(--hairline);
     font-size:14px;
   }
-  .result-row .label{ color:var(--ink-dim); }
-  .result-row .value{ font-family:'Fraunces',serif; font-size:16px; }
+  .result-row .label{ color:var(--ink-dim); font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:0.04em; font-weight:600; }
+  .result-row .value{ font-family:'Bebas Neue',sans-serif; font-size:18px; }
 
   .hidden{ display:none !important; }
   .foot-note{
     text-align:center;
     color:var(--ink-dim);
     font-size:11px;
-    margin-top:16px;
-    font-family:'IBM Plex Mono',monospace;
+    margin-top:18px;
+    font-family:'Barlow Condensed',sans-serif;
+    letter-spacing:0.04em;
+  }
+  .mark{
+    width:34px;height:22px;
+    border:2.5px solid var(--ink);
+    border-radius:50%;
+    margin:0 auto 18px;
+  }
+  .logo-lockup{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    margin-bottom:26px;
+  }
+  .logo-ring{
+    width:38px;height:24px;
+    border:3px solid var(--accent);
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .logo-word{
+    font-family:'Barlow',sans-serif;
+    font-weight:800;
+    font-style:italic;
+    font-size:24px;
+    letter-spacing:0.03em;
+    text-transform:uppercase;
+    color:var(--ink);
   }
 </style>
 </head>
@@ -273,42 +324,49 @@ html
 <div class="stage">
 
   <!-- LOGIN SCREEN -->
-  <div class="file" id="screen-login">
-    <div class="case-no"><span>ACCESSO</span><span>LIVELLO 1</span></div>
-    <h1 class="title">Accesso riservato</h1>
-    <p class="sub">Questo fascicolo è confidenziale. Inserisci la parola d'ordine per procedere.</p>
+  <div class="card" id="screen-login">
+    <div class="accent-bar"></div>
+    <div class="logo-lockup">
+      <div class="logo-ring"></div>
+      <div class="logo-word">Oakley</div>
+    </div>
+    <div class="overline"><span>Field Test</span><span class="hi">Team Access</span></div>
+    <h1 class="title">Password squadra</h1>
+    <p class="sub">Sessione riservata al team. Inserisci la password per accedere al test.</p>
     <div class="field">
-      <label>Parola d'ordine</label>
+      <label>Password</label>
       <input type="password" id="loginPassword" placeholder="••••••••" onkeypress="if(event.key==='Enter') checkPassword()">
     </div>
-    <div id="loginError" style="color:var(--red);font-size:13px;margin-bottom:14px;display:none;">Parola d'ordine errata. Riprova.</div>
-    <button class="btn" onclick="checkPassword()">Accedi</button>
-    <div class="foot-note">A cura di Stefania Pairona</div>
+    <div id="loginError" style="color:var(--accent-dark);font-size:13px;margin-bottom:14px;display:none;">Password errata. Riprova.</div>
+    <button class="btn primary" onclick="checkPassword()">Accedi</button>
+    <div class="foot-note">Oakley Lab — a cura di Stefania Pairona</div>
   </div>
 
   <!-- HOW TO PLAY SCREEN -->
-  <div class="file hidden" id="screen-howto">
-    <div class="case-no"><span>ISTRUZIONI</span><span>PRIMA DI INIZIARE</span></div>
-    <h1 class="title">Come si gioca</h1>
-    <p class="sub">Passatevi il dispositivo a turno. Ogni giocatore vedrà una parola segreta, tranne l'impostore.</p>
+  <div class="card hidden" id="screen-howto">
+    <div class="accent-bar"></div>
+    <div class="overline"><span>Briefing</span><span class="hi">Prima di iniziare</span></div>
+    <h1 class="title">Come funziona</h1>
+    <p class="sub">Passatevi il dispositivo a turno. Ogni tester riceve la scheda tecnica giusta, tranne uno.</p>
     <div style="font-size:14px;line-height:1.8;color:var(--ink);margin-bottom:24px;">
-      1. Ogni giocatore, a turno, guarda lo schermo da solo e scopre il proprio ruolo.<br>
-      2. Chi non è l'impostore vede la parola segreta. L'impostore no.<br>
-      3. A voce alta, ognuno dice una parola legata al termine segreto, senza svelarlo apertamente.<br>
-      4. Dopo un giro di discussione, si vota chi si crede sia l'impostore.<br>
-      5. Si rivela la verità: se lo avete scoperto, vince il gruppo. Altrimenti, vince lui.
+      1. A turno, ognuno guarda lo schermo da solo e scopre il proprio ruolo.<br>
+      2. Chi non è l'impostore vede il termine segreto. L'impostore no.<br>
+      3. A voce alta, ognuno dice una parola legata al termine, senza svelarlo apertamente.<br>
+      4. Dopo un giro di discussione, il team vota chi crede sia l'impostore.<br>
+      5. Si rivela la verità: se lo scoprite, vince il team. Altrimenti, vince lui.
     </div>
-    <button class="btn" onclick="show('screen-setup')">Ho capito — inizia</button>
+    <button class="btn primary" onclick="show('screen-setup')">Ho capito — inizia</button>
   </div>
 
   <!-- SETUP SCREEN -->
-  <div class="file hidden" id="screen-setup">
-    <div class="case-no"><span>FASCICOLO N. 07</span><span>RISERVATO</span></div>
-    <h1 class="title">Il Fascicolo</h1>
-    <p class="sub">Un giocatore in ogni turno riceverà una parola segreta. Uno solo di voi non la riceverà: è l'impostore. Scopritelo prima che scopra voi.</p>
+  <div class="card hidden" id="screen-setup">
+    <div class="accent-bar"></div>
+    <div class="overline"><span>Field Test</span><span class="hi">Sessione 07</span></div>
+    <h1 class="title">Trova l'impostore</h1>
+    <p class="sub">Un tester su tutti non riceverà la scheda tecnica corretta. Scopritelo prima che rovini il test.</p>
 
     <div class="field">
-      <label>Numero di giocatori</label>
+      <label>Numero di tester</label>
       <div class="stepper">
         <button type="button" onclick="changePlayers(-1)">−</button>
         <div class="count" id="playerCount">4</div>
@@ -331,44 +389,47 @@ html
     </div>
 
     <div class="field">
-      <label>Nomi dei giocatori (opzionale)</label>
+      <label>Nomi dei tester (opzionale)</label>
       <div class="names-list" id="namesList"></div>
     </div>
 
-    <button class="btn" onclick="startGame()">Apri il fascicolo</button>
-    <div class="foot-note">A cura di Stefania Pairona</div>
+    <button class="btn primary" onclick="startGame()">Avvia il test</button>
+    <div class="foot-note">Oakley Lab — a cura di Stefania Pairona</div>
   </div>
 
   <!-- PASS SCREEN -->
-  <div class="file hidden" id="screen-pass">
-    <div class="case-no"><span id="passCaseNo">FASCICOLO N. 07</span><span id="passProgress">1 / 4</span></div>
-    <div class="pass-icon">🕵️</div>
-    <div class="pass-name" id="passName">Giocatore 1</div>
+  <div class="card hidden" id="screen-pass">
+    <div class="accent-bar"></div>
+    <div class="overline"><span id="passCaseNo">Sessione 07</span><span id="passProgress">1 / 4</span></div>
+    <div class="pass-icon">🥽</div>
+    <div class="pass-name" id="passName">Tester 1</div>
     <p class="pass-note">Passa il dispositivo solo a questa persona.<br>Nessun altro deve guardare lo schermo ora.</p>
-    <button class="btn" onclick="showReveal()">Sono io — continua</button>
+    <button class="btn primary" onclick="showReveal()">Sono io — continua</button>
   </div>
 
   <!-- REVEAL SCREEN -->
-  <div class="file hidden" id="screen-reveal">
-    <div class="dossier-line" id="revealCaseNo">FASCICOLO N. 07 — PAGINA RISERVATA</div>
-    <h1 class="title" id="revealName">Giocatore 1</h1>
+  <div class="card hidden" id="screen-reveal">
+    <div class="accent-bar"></div>
+    <div class="spec-line" id="revealCaseNo">Scheda tecnica riservata</div>
+    <h1 class="title" id="revealName">Tester 1</h1>
     <p class="sub">Tocca il riquadro per scoprire il contenuto. Richiudi lo schermo subito dopo aver letto.</p>
 
     <div class="reveal-box" id="revealBox" onclick="openRedaction()">
-      <div class="redaction" id="redaction"><span>TOCCA PER APRIRE</span></div>
+      <div class="cover" id="redaction"><span>Tocca per aprire</span></div>
       <div id="revealContent"></div>
     </div>
 
     <div class="hint-toggle hidden" id="hintToggle" onclick="toggleHint()">mostra un indizio di categoria</div>
 
-    <button class="btn hidden" id="nextPlayerBtn" onclick="nextPlayer()">Ho visto — passa il fascicolo</button>
+    <button class="btn primary hidden" id="nextPlayerBtn" onclick="nextPlayer()">Ho visto — passa il test</button>
   </div>
 
   <!-- DISCUSSION SCREEN -->
-  <div class="file hidden" id="screen-discussion">
-    <div class="case-no"><span>FASE 2</span><span>DISCUSSIONE</span></div>
-    <h1 class="title">Discutete</h1>
-    <p class="sub">A turno, ogni giocatore dice una parola (o una breve descrizione) legata al termine segreto. Chi non lo conosce dovrà improvvisare senza farsi scoprire.</p>
+  <div class="card hidden" id="screen-discussion">
+    <div class="accent-bar"></div>
+    <div class="overline"><span>Fase 2</span><span class="hi">Discussione</span></div>
+    <h1 class="title">Confrontatevi</h1>
+    <p class="sub">A turno, ogni tester dice una parola legata al termine segreto. Chi non lo conosce dovrà improvvisare senza farsi scoprire.</p>
 
     <div class="timer" id="timerDisplay">3:00</div>
     <div class="timer-controls">
@@ -376,24 +437,26 @@ html
       <button class="btn secondary" style="flex:1" onclick="resetTimer()">Azzera</button>
     </div>
 
-    <button class="btn" onclick="goToVote()">Si vota</button>
+    <button class="btn primary" onclick="goToVote()">Si vota</button>
   </div>
 
   <!-- VOTE / RESULT SCREEN -->
-  <div class="file hidden" id="screen-vote">
-    <div class="case-no"><span>FASE 3</span><span>VERDETTO</span></div>
+  <div class="card hidden" id="screen-vote">
+    <div class="accent-bar"></div>
+    <div class="overline"><span>Fase 3</span><span class="hi">Verdetto</span></div>
     <h1 class="title">Chi era l'impostore?</h1>
     <p class="sub">Decidete a voce chi accusare, poi rivelate la verità.</p>
-    <button class="btn danger" onclick="revealTruth()">Rivela la verità</button>
+    <button class="btn primary" onclick="revealTruth()">Rivela la verità</button>
   </div>
 
-  <div class="file hidden" id="screen-result">
-    <div class="case-no"><span>CASO CHIUSO</span><span id="resultCaseNo">FASCICOLO N. 07</span></div>
-    <h1 class="title">Il fascicolo è chiuso</h1>
-    <div class="result-row"><span class="label">Parola segreta</span><span class="value" id="resultWord">—</span></div>
+  <div class="card hidden" id="screen-result">
+    <div class="accent-bar"></div>
+    <div class="overline"><span>Test concluso</span><span id="resultCaseNo">Sessione 07</span></div>
+    <h1 class="title">Risultato del test</h1>
+    <div class="result-row"><span class="label">Termine segreto</span><span class="value" id="resultWord">—</span></div>
     <div class="result-row"><span class="label">Categoria</span><span class="value" id="resultCategory">—</span></div>
     <div class="result-row"><span class="label" id="resultImpLabel">Impostore</span><span class="value" id="resultImpostors">—</span></div>
-    <button class="btn" style="margin-top:24px" onclick="newGameSameSetup()">Nuova partita, stessi giocatori</button>
+    <button class="btn primary" style="margin-top:24px" onclick="newGameSameSetup()">Nuovo test, stesso team</button>
     <button class="btn secondary" onclick="backToSetup()">Cambia impostazioni</button>
   </div>
 
@@ -401,18 +464,17 @@ html
 
 <script>
 const CATEGORIES = {
-  "Cibo": ["Pizza","Sushi","Gelato","Pasta","Hamburger","Tiramisù","Paella","Kebab","Risotto","Croissant","Taco","Lasagna","Popcorn","Ramen","Focaccia"],
-  "Animali": ["Leone","Delfino","Pinguino","Elefante","Canguro","Gufo","Squalo","Panda","Cammello","Aquila","Polpo","Volpe","Riccio","Farfalla","Orso"],
-  "Film e Serie TV": ["Titanic","Matrix","Friends","Avatar","Inception","Frozen","Joker","Squid Game","Il Padrino","Toy Story","Breaking Bad","Shrek","Gladiatore","Stranger Things","Rocky"],
-  "Sport": ["Calcio","Tennis","Nuoto","Basket","Sci","Golf","Boxe","Ciclismo","Pallavolo","Scherma","Rugby","Atletica","Judo","Vela","Pattinaggio"],
-  "Città": ["Parigi","Tokyo","New York","Roma","Il Cairo","Sydney","Barcellona","Dubai","Londra","Rio de Janeiro","Amsterdam","Venezia","Berlino","Istanbul","Marrakech"],
-  "Oggetti quotidiani": ["Ombrello","Chiavi","Occhiali","Zaino","Specchio","Forbici","Candela","Termos","Cuscino","Sveglia","Portafoglio","Lampadina","Valigia","Bicicletta","Orologio"]
+  "Modelli iconici": ["Holbrook","Frogskins","Radar EV","Flak 2.0","Jawbreaker","Sutro","Gascan","Half Jacket","Sylas","Kato","Encoder","Turbine"],
+  "Tecnologie & materiali": ["Prizm","Plutonite","Unobtainium","O Matter","Switchlock","Iridium","HDO","Three-Point Fit"],
+  "Sport Oakley": ["Ciclismo","Sci","Golf","Motocross","Surf","Baseball","Running","Skateboard","Snowboard","Beach Volley","Tennis","Arrampicata"],
+  "Colori lente Prizm": ["Ruby","Sapphire","Jade","Black","24K","Rose Gold","Snow","Trail","Road","Golf","Deep Water","Shallow Water"],
+  "Accessori da campo": ["Custodia rigida","Panno microfibra","Cordino sportivo","Ponte nasale","Aste regolabili","Lente di ricambio","Astuccio morbido","Clip magnetica"]
 };
 
 let state = {
   players: 4,
   impostors: 1,
-  category: "Cibo",
+  category: "Modelli iconici",
   names: [],
   order: [],
   impostorIndexes: [],
@@ -464,7 +526,7 @@ function renderNamesList(){
   for(let i=0;i<state.players;i++){
     const inp = document.createElement("input");
     inp.type = "text";
-    inp.placeholder = "Giocatore " + (i+1);
+    inp.placeholder = "Tester " + (i+1);
     inp.value = state.names[i] || "";
     inp.dataset.index = i;
     list.appendChild(inp);
@@ -490,7 +552,7 @@ function changeImpostors(delta){
 
 function collectNames(){
   const inputs = document.querySelectorAll("#namesList input");
-  state.names = Array.from(inputs).map((inp,i)=> inp.value.trim() || ("Giocatore " + (i+1)));
+  state.names = Array.from(inputs).map((inp,i)=> inp.value.trim() || ("Tester " + (i+1)));
 }
 
 function shuffle(arr){
@@ -515,7 +577,7 @@ function startGame(){
 
 function showPassScreen(){
   const name = state.names[state.currentIndex];
-  $("passCaseNo").textContent = "FASCICOLO N. " + state.caseNo;
+  $("passCaseNo").textContent = "Sessione " + state.caseNo;
   $("passProgress").textContent = (state.currentIndex+1) + " / " + state.players;
   $("passName").textContent = name;
   show("screen-pass");
@@ -524,14 +586,14 @@ function showPassScreen(){
 function showReveal(){
   const name = state.names[state.currentIndex];
   const isImpostor = state.impostorIndexes.includes(state.currentIndex);
-  $("revealCaseNo").textContent = "FASCICOLO N. " + state.caseNo + " — PAGINA " + (state.currentIndex+1);
+  $("revealCaseNo").textContent = "Scheda tecnica — Sessione " + state.caseNo;
   $("revealName").textContent = name;
 
   const content = $("revealContent");
   content.innerHTML = "";
   const wordEl = document.createElement("div");
   if(isImpostor){
-    wordEl.innerHTML = '<div class="reveal-word is-impostor">SEI L\u2019IMPOSTORE</div><div class="stamp">NON CONOSCI LA PAROLA</div>';
+    wordEl.innerHTML = '<div class="reveal-word is-impostor">SEI L\u2019IMPOSTORE</div><div class="tag">Scheda mancante</div>';
   } else {
     wordEl.innerHTML = '<div class="reveal-word is-crew">' + state.word + '</div>';
   }
@@ -539,7 +601,7 @@ function showReveal(){
 
   const redaction = $("redaction");
   redaction.classList.remove("opened");
-  redaction.innerHTML = "<span>TOCCA PER APRIRE</span>";
+  redaction.innerHTML = "<span>Tocca per aprire</span>";
 
   const hint = $("hintToggle");
   if(isImpostor){
@@ -628,7 +690,7 @@ function goToVote(){
 }
 
 function revealTruth(){
-  $("resultCaseNo").textContent = "FASCICOLO N. " + state.caseNo;
+  $("resultCaseNo").textContent = "Sessione " + state.caseNo;
   $("resultWord").textContent = state.word;
   $("resultCategory").textContent = state.category;
   $("resultImpLabel").textContent = state.impostorIndexes.length > 1 ? "Impostori" : "Impostore";
